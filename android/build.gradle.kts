@@ -123,7 +123,7 @@ dependencies {
             implementation(accompanist.inset)
         }
 
-        implementation ("androidx.media:media:1.4.3")
+        implementation ("androidx.media:media:1.6.0")
 
 
         // Test
