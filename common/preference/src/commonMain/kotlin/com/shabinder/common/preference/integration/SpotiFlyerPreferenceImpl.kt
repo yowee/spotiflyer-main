@@ -77,4 +77,7 @@ internal class SpotiFlyerPreferenceImpl(
             fileManager.loadImage(url, 150, 150)
         }
     }
+
+    override val downloadPath: String
+        get() = model.value.downloadPath
 }

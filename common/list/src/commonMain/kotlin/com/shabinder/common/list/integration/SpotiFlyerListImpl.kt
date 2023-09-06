@@ -30,6 +30,7 @@ import com.shabinder.common.list.store.SpotiFlyerListStore.Intent
 import com.shabinder.common.list.store.SpotiFlyerListStoreProvider
 import com.shabinder.common.list.store.getStore
 import com.shabinder.common.models.TrackDetails
+import com.shabinder.common.models.AudioQuality
 
 internal class SpotiFlyerListImpl(
     componentContext: ComponentContext,
@@ -62,6 +63,20 @@ internal class SpotiFlyerListImpl(
     override fun onDownloadClicked(track: TrackDetails) {
         store.accept(Intent.StartDownload(track))
     }
+    override fun onDownloadClickedWithBiteRate(track: TrackDetails, selectedQuality: AudioQuality?) {
+//        if (selectedQuality != null) {
+//
+//            val downloadOptions = DownloadOptions(
+//                track = track,
+//                quality = selectedQuality
+//            )
+//            store.accept(Intent.StartDownloadWithQuality(downloadOptions))
+//        } else {
+//
+//        }
+    }
+
+
 
     override fun onBackPressed() {
         listOutput.callback(SpotiFlyerList.Output.Finished)

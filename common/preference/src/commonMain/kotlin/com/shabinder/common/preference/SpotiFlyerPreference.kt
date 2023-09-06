@@ -31,6 +31,9 @@ import com.shabinder.common.preference.integration.SpotiFlyerPreferenceImpl
 
 interface SpotiFlyerPreference {
 
+    val downloadPath: String // Expose the download path
+
+
     val model: Value<State>
 
     val analytics: Analytics

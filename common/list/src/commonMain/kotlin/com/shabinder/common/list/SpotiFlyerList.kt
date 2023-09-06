@@ -29,6 +29,7 @@ import com.shabinder.common.models.PlatformQueryResult
 import com.shabinder.common.models.TrackDetails
 import com.shabinder.common.providers.FetchPlatformQueryResult
 import kotlinx.coroutines.flow.MutableSharedFlow
+import com.shabinder.common.models.AudioQuality
 
 interface SpotiFlyerList {
 
@@ -44,7 +45,9 @@ interface SpotiFlyerList {
     * */
     fun onDownloadClicked(track: TrackDetails)
 
-    /*
+    fun onDownloadClickedWithBiteRate(track : TrackDetails, selectedQuality: AudioQuality?)
+
+        /*
     * To Pop and return back to Main Screen
     * */
     fun onBackPressed()

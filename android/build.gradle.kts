@@ -35,6 +35,7 @@ repositories {
 
 android {
     val props = gradleLocalProperties(rootDir)
+    compileSdk = 31
     if (props.containsKey("storeFileDir")) {
         signingConfigs {
             create("release") {
@@ -46,7 +47,6 @@ android {
         }
     }
 
-    compileSdk = Versions.compileSdkVersion
     buildToolsVersion = "30.0.3"
 
     defaultConfig {
@@ -88,7 +88,6 @@ dependencies {
     implementation(compose.materialIconsExtended)
     implementation(deps.androidx.activity)
 
-    implementation ("androidx.media:media:1.4.3")
 
     // Project's SubModules
     implementation(project(":common:database"))
@@ -123,6 +122,9 @@ dependencies {
             implementation(androidx.lifecycle)
             implementation(accompanist.inset)
         }
+
+        implementation ("androidx.media:media:1.4.3")
+
 
         // Test
         testImplementation(junit)

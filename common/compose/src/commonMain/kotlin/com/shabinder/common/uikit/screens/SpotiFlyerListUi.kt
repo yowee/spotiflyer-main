@@ -34,10 +34,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
@@ -52,12 +56,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.shabinder.common.core_components.picture.Picture
 import com.shabinder.common.list.SpotiFlyerList
 import com.shabinder.common.models.DownloadStatus
 import com.shabinder.common.models.TrackDetails
 import com.shabinder.common.models.Actions
+import com.shabinder.common.models.AudioQuality
 import com.shabinder.common.translations.Strings
 import com.shabinder.common.uikit.DownloadAllImage
 import com.shabinder.common.uikit.DownloadImageArrow
@@ -111,7 +117,11 @@ fun SpotiFlyerListContent(
                     itemsIndexed(model.trackList) { _, item ->
                         TrackCard(
                             track = item,
-                            downloadTrack = { component.onDownloadClicked(item) },
+                            updateAndDownloadTrack = { selectedQuality ->
+                                // Update and download the track with the selected audio quality
+                                val updatedItem = item.copy(audioQuality = selectedQuality)
+                                component.onDownloadClicked(updatedItem)
+                            },
                             loadImage = { component.loadImage(item.albumArtURL) }
                         )
                     }
@@ -152,7 +162,7 @@ fun SpotiFlyerListContent(
 @Composable
 fun TrackCard(
     track: TrackDetails,
-    downloadTrack: () -> Unit,
+    updateAndDownloadTrack: (AudioQuality) -> Unit,
     loadImage: suspend () -> Picture
 ) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
@@ -196,7 +206,7 @@ fun TrackCard(
                 DownloadImageError(
                     Modifier.clickable(
                         onClick = {
-                            downloadTrack()
+                            updateAndDownloadTrack(AudioQuality.KBPS320)
                         }
                     )
                 )
@@ -208,12 +218,17 @@ fun TrackCard(
                 CircularProgressIndicator(progress = 100f, color = colorAccent)
             }
             is DownloadStatus.NotDownloaded -> {
-                DownloadImageArrow(
-                    Modifier.clickable(
-                        onClick = {
-                            downloadTrack()
-                        }
-                    )
+                AudioQualitySelectionDialog(
+                    currentQuality = track.audioQuality,
+                    onQualitySelected = { newQuality ->
+                        // Update the track's audio quality
+                        track.audioQuality = newQuality
+                        // Call the updateAndDownloadTrack function
+                        updateAndDownloadTrack(newQuality)
+                    },
+                    onDismiss = {
+                        // Handle dialog dismissal if needed
+                    }
                 )
             }
         }
@@ -264,3 +279,55 @@ fun DownloadAllButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
         modifier = modifier
     )
 }
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun AudioQualitySelectionDialog(
+    currentQuality: AudioQuality,
+    onQualitySelected: (AudioQuality) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val audioQualities = AudioQuality.values().toMutableList().apply {
+        remove(AudioQuality.UNKNOWN)
+    }
+
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text("Select Preferred Audio Quality") },
+        buttons = {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                audioQualities.forEach { quality ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = (quality == currentQuality),
+                                onClick = {
+                                    onQualitySelected(quality)
+                                }
+                            )
+                            .padding(vertical = 4.dp)
+                    ) {
+                        RadioButton(
+                            selected = (quality == currentQuality),
+                            onClick = {
+                                onQualitySelected(quality)
+                            }
+                        )
+                        Text(
+                            text = quality.kbps + " KBPS",
+                            style = SpotiFlyerTypography.h6,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
+                }
+            }
+        }
+    )
+}
+

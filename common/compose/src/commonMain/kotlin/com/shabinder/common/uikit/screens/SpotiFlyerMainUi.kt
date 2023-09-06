@@ -113,8 +113,9 @@ import android.media.MediaPlayer;
 import androidx.compose.material.IconButton
 import androidx.compose.runtime.DisposableEffect
 import java.io.IOException
-
-
+//import com.shabinder.spotiflyer.service.AudioPlaybackService
+import androidx.compose.ui.platform.LocalContext
+import android.content.Intent
 @Composable
 fun SpotiFlyerMainContent(component: SpotiFlyerMain) {
     val model by component.model.subscribeAsState()
@@ -158,8 +159,6 @@ fun SpotiFlyerMainContent(component: SpotiFlyerMain) {
         }
     }
 }
-
-
 
 @Composable
 fun HomeTabBar(
@@ -652,6 +651,9 @@ fun DownloadItem(
     // Use this to keep track of whether this item is currently playing
     val isItemPlaying = remember { mutableStateOf(false) }
 
+    val context = LocalContext.current // Obtain the Context using LocalContext
+
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth().padding(end = 8.dp)
@@ -721,6 +723,14 @@ fun DownloadItem(
 
                         // Set isItemPlaying to true for this item
                         isItemPlaying.value = true
+
+                        // Start or bind to the Foreground Service here
+//                        val playbackIntent = Intent(context, com.shabinder.spotiflyer.service.AudioPlaybackService::class.java)
+//                        playbackIntent.action = AudioPlaybackService.ACTION_PLAY
+//                        playbackIntent.putExtra(AudioPlaybackService.EXTRA_AUDIO_URL, item.link)
+//                        context.startService(playbackIntent)
+
+
                     } catch (e: IOException) {
                         // Handle any errors that may occur during playback setup
                     }
